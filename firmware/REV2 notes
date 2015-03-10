@@ -1,0 +1,5 @@
+FIX
+	More decoupling
+	USB esd protection
+	Single source components
+	USB current compliant (now it just assumes 500mA instead of negotiating)
