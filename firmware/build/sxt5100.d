@@ -1,5 +1,7 @@
-build/sxt5100.o: sxt5100.c settings.h dogm.h
+build/sxt5100.o: sxt5100.c settings.h time.h keyboard.h
 
 settings.h:
 
-dogm.h:
+time.h:
+
+keyboard.h:

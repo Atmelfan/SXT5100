@@ -1,8 +1,0 @@
-73-869-33	1	"MCP73831 Lipo laddnings krets"
-73-284-76	1	"LP3985IM5-3.3 LDO regulator"
-73-287-53	1	"Atxmega16A4U mikrokontroller(uppgradera till X128A4U"
-75-407-97	1	"128x64 DOGM LCD"
-75-408-33	1	"DOGM bakgrundsbelysning"
-60-547-20	20	"1K 1206 motstånd(ersätt med resistor nät)"
-60-587-06	20	"330R 0805 motstånd"
-65-502-14	20	"1µF 0805 kondensator"

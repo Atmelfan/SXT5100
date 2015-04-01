@@ -18,7 +18,7 @@ OBJECTS=$(addprefix build/,$(SOURCES:.cpp=.o))
 
 OBJECTS:=$(addprefix build/,$(SOURCES:.c=.o))
 
-CSTD?=c99
+CSTD?=gnu99
 COPT=-Os -fdata-sections -ffunction-sections
 CFLAGS=-mmcu=$(MMCU) -std=$(CSTD) $(COPT) -Wall -Wno-strict-aliasing
 CFLAGS+=$(addprefix -I,$(INCLUDES))

@@ -1,51 +1,62 @@
 #include "dogm.h"
 
-uint8_t buffer[WIDTH*HEIGHT/8];
+void gfx_spi_init(){
+	/*Setup io*/
+	SET_DIR(DOG_RST);
+	SET_DIR(DOG_A0);
+	SET_DIR(DOG_SO);
+	SET_DIR(DOG_SCL);
+	SET_DIR(DOG_CS);
+	/*Select dog*/
+	SET_IO(DOG_RST);//Set reset high (no reset)
+	SET_IO(DOG_CS);//Select dogm
+}
+
+void spi_write(char byte){
+	while(byte){
+		SET_IO(DOG_SCL);
+		if(byte & 0x80)
+			SET_IO(DOG_SO);
+		else
+			CLR_IO(DOG_SO);
+		//delay
+		CLR_IO(DOG_SCL);
+		byte <<= 1;
+		//delay
+	}
+}
+
+void gfx_spi_write_cmd(uint8_t byte){
+	CLR_IO(DOG_A0);//Select dogm
+	spi_write(byte);
+}
+
+void gfx_spi_write_dat(uint8_t byte){
+	SET_IO(DOG_A0);//Select dogm
+	spi_write(byte);
+}
 
 void gfx_init(){
 	gfx_spi_init();
-
+	/*Initialize dog*/
+	gfx_spi_write_cmd(0x40);
+	gfx_spi_write_cmd(0xA1);
+	gfx_spi_write_cmd(0xC0);
+	gfx_spi_write_cmd(0xA6);
+	gfx_spi_write_cmd(0xA2);
+	gfx_spi_write_cmd(0x2F);
+	gfx_spi_write_cmd(0xF8);
+	gfx_spi_write_cmd(0x00);
+	gfx_spi_write_cmd(0x27);
+	gfx_spi_write_cmd(0x81);
+	gfx_spi_write_cmd(0x16);
+	gfx_spi_write_cmd(0xAC | 0x01);
+	gfx_spi_write_cmd(0x00 | 0x01);
+	gfx_spi_write_cmd(0xAF);
 
 	gfx_clear();
 }
 
 void gfx_clear(){
-	for (int i = 0; i < (WIDTH*HEIGHT/8); ++i)
-	{
-		buffer[i] = 0x00;
-	}
+	//TODO
 }
-
-void gfx_drawpoint(pixel_t x, pixel_t y){
-	buffer[(y/8)*WIDTH + x] |= (1 << y % 8);
-}
-
-void gfx_drawline(pixel_t x1, pixel_t y1, pixel_t x2, pixel_t y2){
-  // int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
-  // int dy = abs(y1-y0), sy = y0<y1 ? 1 : -1; 
-  // int err = (dx>dy ? dx : -dy)/2, e2;
- 
-  // for(;;){
-  //   gfx_drawpoint(x0,y0);
-  //   if (x0==x1 && y0==y1) break;
-  //   e2 = err;
-  //   if (e2 >-dx) { err -= dy; x0 += sx; }
-  //   if (e2 < dy) { err += dx; y0 += sy; }
-  // }
-}
-
-void gfx_drawbox(pixel_t x1, pixel_t y1, pixel_t x2, pixel_t y2){
-	for (int i = x1; i <= x2; ++i)
-	{
-		gfx_drawpoint(i, y1);
-		gfx_drawpoint(i, y2);
-	}
-	for (int i = y1; i <= y2; ++i)
-	{
-		gfx_drawpoint(x1, i);
-		gfx_drawpoint(x2, i);
-	}
-}
-
-void gfx_drawtext(pixel_t x, pixel_t y, char* s);
-void gfx_drawtext_cursor(pixel_t x, pixel_t y, char* s, uint8_t cursor);

@@ -1,5 +1,9 @@
 FIX
 	More decoupling
 	USB esd protection
-	Single source components
-	USB current compliant (now it just assumes 500mA instead of negotiating)
+	USB current compliant (currently it just assumes 500mA instead of negotiating)
+	Replace the 2*32KB SRAM chips with a 128KB low power one.
+	1 Magnus = 10^1 = 10 failures
+	2 Magnus = 10^2= 100 errors
+	0 Magnus = 10^0 = 1 error
+	-1 Magnus = 10^-1 = 0.1 errors
