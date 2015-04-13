@@ -1,1 +1,3 @@
 #define F_CPU 32000000
+#define HW_REVISION 2
+#define THE_ANSWER 42

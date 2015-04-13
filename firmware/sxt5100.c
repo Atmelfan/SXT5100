@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <avr/sleep.h>
 #include <string.h>
-#include "time.h"
+#include <time.h>
 #include "keyboard.h"
 
 //Something woke up the processor, update screen and do stuff as necessary.

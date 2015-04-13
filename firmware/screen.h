@@ -1,23 +1,18 @@
 #ifndef SCREEN
 #define SCREEN
+#include "keyboard.h"
 
 typedef struct screen {
 	/**
 	* Function key descriptions.
 	*/
-	char[3] f1;
-	char[3] f2;
-	char[3] f3;
+	char* f1;
+	char* f2;
+	char* f3;
 	/**
-	* Called when the screen is refreshed(~1Hz), should return without
-	* doing anything if nothing needs to be redrawn.
+	* 
 	*/
-	void (*redraw)();
-	/**
-	* Called when a key is pressed.
-	*/
-	void (*keypress)();
+	void (*update)();
 };
-
 
 #endif

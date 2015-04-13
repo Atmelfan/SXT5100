@@ -7,7 +7,7 @@ OBJCOPY :=$(CROSS)objcopy
 OBJDUMP :=$(CROSS)objdump
 
 TARGET=sxt5100
-MMCU?=atxmega16a4
+MMCU?=atxmega128a1u
 
 SOURCES=$(wildcard *.cpp) $(wildcard *.c)
 INCLUDES=
