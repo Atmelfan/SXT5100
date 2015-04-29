@@ -7,18 +7,36 @@
 #include <string.h>
 #include <time.h>
 #include "keyboard.h"
+#include "gfx_driver.h"
+#include "screen.h"
+
+
+struct tm * timeinfo;
+screen* current_screen;
+
+void set_screen(screen* scr){
+	gfx_clear();
+	scr->setup();
+	current_screen = scr;
+}
 
 //Something woke up the processor, update screen and do stuff as necessary.
 //Interrupts:
 //  Clock update (1Hz)
 //  Key pressed
 void update(){
+	//update time indicator
+	time_t t;
+	char str[9];
+	time(&t);
+	timeinfo = localtime(&t);
+	strftime((char*)&str, 9, "%T", timeinfo);
+	gfx_drawstring(0,0,(char*)&str,GFX_NONE);
+	//Do whatever
 	keyboard_keys key = keyboard_scan();
-	if(key != KEYBORD_NONE){
-		//A key was pressed!
+	if(key != KEYBORD_NONE && key != KEYBORD_RESET){
+		current_screen->update(key);
 	}
-	//Update clock display
-	//TODO
 }
 
 void setClockTo32MHz() {
@@ -33,29 +51,44 @@ static inline void rtc_init ( void ) {
 	OSC_XOSCCTRL= OSC_XOSCSEL_32KHz_gc;
 	OSC_CTRL |= OSC_XOSCEN_bm;   /* Set internal 32kHz as source. */
 	while ( !( OSC_STATUS & OSC_XOSCRDY_bm ) ); /* Wait for the int. 32kHz oscillator to stabilize. */
-	PMIC_CTRL |= PMIC_HILVLEN_bm; // Set Int. priority level to low in PMIC
+	
 	// Next 3 lines must be in this order.
 	while( ( RTC_STATUS & 0x01 ) ); // Needed B 4 writing to RTC PER / CNT registers
 	RTC_PER = (1024 - 1); // Period reg. value. Must subtract 1, 'cause zero value counted.
-	RTC_CTRL = RTC_PRESCALER_DIV1_gc; // div by 1, so 1.024 kHz oscillator
+	RTC_CTRL = RTC_PRESCALER_DIV1_gc; // div by 1, so 1024Hz oscillator
 	RTC_INTCTRL |=  RTC_OVFINTLVL_HI_gc; // Set Int. priority level to low in RTC. Must match what's in PMIC_CTRL
-	/* Set internal 1.024 kHz oscillator as clock source for RTC and enable it. */
+	/* Set external 32kHz oscillator as clock source for RTC and enable it. */
 	CLK_RTCCTRL = CLK_RTCSRC_TOSC_gc | CLK_RTCEN_bm;
 
 }
 
-volatile time_t ck = 0;
 
-ISR( RTC_OVF_vect ) {
-	//Increment time counter
-	ck++;
+ISR(RTC_OVF_vect, ISR_NAKED)
+{
+    system_tick();
+    reti();
 }
 
 int main() 
 {
 	setClockTo32MHz();
-	rtc_init();
+	PORTE.DIRSET = (1 << 2);
+	gfx_init();
 	keyboard_init();
+	//Set initial date
+	struct tm date;
+	date.tm_year = 2015-1900;
+	date.tm_mon = 4-1;
+	date.tm_mday = 30;
+	date.tm_hour = 00;
+	date.tm_min = 34;
+	date.tm_sec = 20;
+	date.tm_isdst = 0;
+	set_system_time(mktime(&date));
+	//Initialize clock screen
+	set_screen(&screen_clock);
+	rtc_init();
+	PMIC_CTRL |= PMIC_HILVLEN_bm | PMIC_LOLVLEN_bm; //Enable RTC interrupts
 	while(1){
 		update();
 		//Sleep between interrupts
@@ -63,6 +96,7 @@ int main()
 		SLEEP.CTRL = SLEEP_SEN_bm + SLEEP_SMODE_PSAVE_gc;
 		sei();
 		sleep_cpu();
+		//PORTE.OUTTGL = (1 << 2);
 	}
 	return 0;
 }

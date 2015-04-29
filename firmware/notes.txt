@@ -3,3 +3,4 @@ FIX
 	USB esd protection
 	USB current compliant (currently it just assumes 500mA instead of negotiating)
 	Replace the 2*32KB SRAM chips with a 128KB low power one.
+	Replace LP3985(100µA Iq) with XC6221A332(25µA Iq)

@@ -2,17 +2,21 @@
 #define SCREEN
 #include "keyboard.h"
 
-typedef struct screen {
+typedef struct {
 	/**
-	* Function key descriptions.
+	* Called to setup screen alternatives and stuff
 	*/
-	char* f1;
-	char* f2;
-	char* f3;
+	void (*setup)();
 	/**
-	* 
+	* Called
 	*/
-	void (*update)();
-};
+	void (*update)(keyboard_keys key);
+} screen;
+
+
+extern void set_screen(screen* scr);
+
+extern screen screen_clock;
+extern screen screen_console;
 
 #endif

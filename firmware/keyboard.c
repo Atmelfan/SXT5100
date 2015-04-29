@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/pgmspace.h>
 
 #define DEBUG 0
 
@@ -9,33 +10,83 @@
 #define COLS_INT_vect PORTA_INT0_vect
 #define ROWS PORTD
 
+volatile char pressed = 0;
+
+const char chars[][3] PROGMEM = {
+	{'7','Q','?'},//0
+	{'8','W','<'},//1
+	{'9','E','?'},//2
+	{'+','R','='},//3
+	{'?','T','?'},//4
+	{'*','Y','>'},//5
+	{'(','U','O'},//6
+	{')','I','P'},//7
+
+	{'4','A','?'},//8
+	{'5','S','?'},//9
+	{'6','D','?'},//10
+	{'-','F','?'},//11
+	{'?','G',';'},//12
+	{'?','H','~'},//13
+	{'?','J','?'},//14
+	{'/','K','L'},//15
+
+	{'1','Z','?'},//16
+	{'2','X','?'},//17
+	{'3','C','?'},//18
+	{'0','V','j'},//19
+	{'.','B',','},//20
+	{'?','N','"'},//21
+	{' ','M','?'},//22
+	{'\0','?','?'},//23
+};
+
+char keyboard_tochar(uint8_t mode, keyboard_keys key){
+	if (key < 8)
+	{
+		return '?';
+	}
+	return pgm_read_byte(&(chars[key - 8][mode]));
+}
 
 void keyboard_wait_async(){
 	//Set all rows to low so that columns gets pulled low when pressed
 	ROWS.OUTCLR = 0x0f;
-	//Enable interrupts
-	PMIC.CTRL |= PMIC_LOLVLEN_bm;
 	sei();
 }
 
 //Wake up and let whatever is running scan the keyboard.
-EMPTY_INTERRUPT(COLS_INT_vect);
+ISR(COLS_INT_vect){
+	pressed = 1;
+}
+
+char keyboard_pressed(){
+	if (pressed)
+	{
+		pressed = 0;
+		return 1;
+	}
+	return 0;
+} 
 
 keyboard_keys keyboard_scan(){
+
 	for (int row = 0; row < 4; ++row)
 	{
 		//Set row to low
 		ROWS.OUTSET = 0x0f;
 		ROWS.OUTCLR = (1 << row);
+		_delay_ms(1);
 		//Read columns
-		uint8_t cols = COLS.IN;
-		if(cols != 0xff){
+		uint8_t cols = ~COLS.IN;
+		if(cols != 0x00){
 			//If >1 column is low, debounce and call handler.
 			_delay_ms(10);
+			cols = ~COLS.IN;
 			for (int col = 0; col < 8; ++col)
 			{
 				if(cols & (1 << col)){
-					return row*8 + col;
+					return row*8+col;
 				}
 			}
 		}

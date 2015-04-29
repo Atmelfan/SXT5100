@@ -2,6 +2,7 @@
 #define KEYBOARD_H_
 #include <avr/io.h>
 
+//Spelled keyboard wrong, too lazy to fix.
 typedef enum {
 	//ROW 1					   char_________shift char__alt char
 	KEYBORD_NONE 	= 0,	// \0			\0			\0
@@ -45,7 +46,11 @@ typedef enum {
 * Initialize keyboard
 */
 void keyboard_init();
+/**
+* Returns 1 if a key has been pressed since this method was last called, 0 otherwise.
+*/
 
+char keyboard_pressed();
 /**
 * Scans and returns the first pressed key or 0 if no key was pressed.
 */
@@ -53,7 +58,7 @@ keyboard_keys keyboard_scan();
 /**
 *
 */
-char keyboard_tochar(keyboard_keys key, char mode);
+char keyboard_tochar(uint8_t mode, keyboard_keys key);
 
 
 #endif
