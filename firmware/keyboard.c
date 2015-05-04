@@ -13,33 +13,54 @@
 volatile char pressed = 0;
 
 const char chars[][3] PROGMEM = {
-	{'7','Q','?'},//0
+	{'7','Q',20},//0
 	{'8','W','<'},//1
-	{'9','E','?'},//2
+	{'9','E',18},//2
 	{'+','R','='},//3
-	{'?','T','?'},//4
+	{14,'T',19},//4
 	{'*','Y','>'},//5
 	{'(','U','O'},//6
 	{')','I','P'},//7
 
-	{'4','A','?'},//8
-	{'5','S','?'},//9
-	{'6','D','?'},//10
-	{'-','F','?'},//11
-	{'?','G',';'},//12
-	{'?','H','~'},//13
-	{'?','J','?'},//14
+	{'4','A',13},//8
+	{'5','S',12},//9
+	{'6','D',11},//10
+	{'-','F',10},//11
+	{15,'G',';'},//12
+	{16,'H','~'},//13
+	{17,'J',9},//14
 	{'/','K','L'},//15
 
-	{'1','Z','?'},//16
-	{'2','X','?'},//17
-	{'3','C','?'},//18
+	{'1','Z',7},//16
+	{'2','X',5},//17
+	{'3','C',6},//18
 	{'0','V','j'},//19
 	{'.','B',','},//20
-	{'?','N','"'},//21
-	{' ','M','?'},//22
-	{'\0','?','?'},//23
+	{1,'N','"'},//21
+	{' ','M',3},//22
+	{0,'?',2},//23
 };
+
+int8_t keyboard_tonum(keyboard_keys key){
+	if (key >= 8 && key <  11)
+	{
+		return key-1;
+	}
+	if (key >= 16 && key <  19)
+	{
+		return key-12;
+	}
+	if (key >= 24 && key <  27)
+	{
+		return key-23;
+	}
+	if (key == 27)
+	{
+		return 0;
+	}
+	return -1;
+}
+
 
 char keyboard_tochar(uint8_t mode, keyboard_keys key){
 	if (key < 8)
@@ -70,22 +91,23 @@ char keyboard_pressed(){
 } 
 
 keyboard_keys keyboard_scan(){
-
 	for (int row = 0; row < 4; ++row)
 	{
 		//Set row to low
 		ROWS.OUTSET = 0x0f;
 		ROWS.OUTCLR = (1 << row);
-		_delay_ms(1);
+		_delay_us(10);
 		//Read columns
 		uint8_t cols = ~COLS.IN;
 		if(cols != 0x00){
 			//If >1 column is low, debounce and call handler.
-			_delay_ms(10);
+			_delay_ms(100);
 			cols = ~COLS.IN;
 			for (int col = 0; col < 8; ++col)
 			{
-				if(cols & (1 << col)){
+				if(cols & (1 << col) && !(row == 0 && col == 7)){
+					//PORTE.OUTTGL = (1 << 2);
+					keyboard_wait_async();
 					return row*8+col;
 				}
 			}

@@ -1,14 +1,14 @@
 #include "screen.h"
 #include "gfx_driver.h"
 
-char command[128];
+char command[128] = {' ',0};
 uint8_t mode = 0;
 uint8_t indx = 0;
 
 void update_console(keyboard_keys key){
 	if (key == KEYBORD_F3)
 	{
-		set_screen(&screen_clock);
+		set_screen(&screen_fs);
 		return;
 	}else if (key == KEYBORD_F1)
 	{
@@ -30,19 +30,25 @@ void update_console(keyboard_keys key){
 		}
 	}else if (key == KEYBORD_RIGHT)
 	{
-		if (indx < 21 && command[indx] != '\0')
+		if (indx < 20 && command[indx] != '\0')
 		{
 			indx++;
 		}
 	}else if (key == KEYBORD_DELETE)
 	{
+		if (command[indx] == ' ')
+		{
+			set_screen(&screen_clock);
+			return;	
+		}
 		command[indx] = ' ';
 	}else{
 		command[indx] = keyboard_tochar(mode, key);
-		if (indx < 21)
+		if (indx < 20)
 		{
 			indx++;
-			command[indx] = ' ';
+			if(command[indx] == 0)
+				command[indx] = ' ';
 		}
 	}
 	switch(mode)
@@ -62,12 +68,19 @@ void update_console(keyboard_keys key){
 
 void setup_console(){
 	mode = 0;
+	indx = 0;
+	gfx_drawstring_cursor(0, 1, (char*)&command, indx, GFX_UNDERLINE);
 	gfx_drawstring(62 ,0,"SHF",GFX_UNDERLINE);
 	gfx_drawstring(86 ,0,"ALT",GFX_UNDERLINE);
-	gfx_drawstring(110,0,"RET",GFX_UNDERLINE);
+	gfx_drawstring(110,0,"FST",GFX_UNDERLINE);
+}
+
+void close_console(){
+
 }
 
 screen screen_console = {
 	.update = &update_console,
 	.setup = &setup_console,
+	.close = &close_console
 };

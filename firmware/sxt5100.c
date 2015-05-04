@@ -11,13 +11,27 @@
 #include "screen.h"
 
 
-struct tm * timeinfo;
+time_t current_time;
 screen* current_screen;
+uint8_t ttr = 0;
+
+void print_time(time_t* t){
+	char str[9];
+	struct tm* timeinfo = localtime(t);
+	strftime((char*)&str, 9, "%T", timeinfo);
+	gfx_drawstring(0,0,(char*)&str,GFX_NONE);
+}
 
 void set_screen(screen* scr){
+	if (current_screen != NULL)
+	{
+		current_screen->close();
+	}
 	gfx_clear();
+	print_time(&current_time);
 	scr->setup();
 	current_screen = scr;
+	ttr = 0;
 }
 
 //Something woke up the processor, update screen and do stuff as necessary.
@@ -27,14 +41,15 @@ void set_screen(screen* scr){
 void update(){
 	//update time indicator
 	time_t t;
-	char str[9];
 	time(&t);
-	timeinfo = localtime(&t);
-	strftime((char*)&str, 9, "%T", timeinfo);
-	gfx_drawstring(0,0,(char*)&str,GFX_NONE);
+	if (current_time != t)
+	{
+		current_time = t;
+		print_time(&t);
+	}
 	//Do whatever
 	keyboard_keys key = keyboard_scan();
-	if(key != KEYBORD_NONE && key != KEYBORD_RESET){
+	if(key != KEYBORD_NONE){
 		current_screen->update(key);
 	}
 }
@@ -65,6 +80,7 @@ static inline void rtc_init ( void ) {
 
 ISR(RTC_OVF_vect, ISR_NAKED)
 {
+	ttr++;
     system_tick();
     reti();
 }
@@ -78,11 +94,11 @@ int main()
 	//Set initial date
 	struct tm date;
 	date.tm_year = 2015-1900;
-	date.tm_mon = 4-1;
-	date.tm_mday = 30;
-	date.tm_hour = 00;
-	date.tm_min = 34;
-	date.tm_sec = 20;
+	date.tm_mon = 5-1;
+	date.tm_mday = 3;
+	date.tm_hour = 19;
+	date.tm_min = 21;
+	date.tm_sec = 55;
 	date.tm_isdst = 0;
 	set_system_time(mktime(&date));
 	//Initialize clock screen

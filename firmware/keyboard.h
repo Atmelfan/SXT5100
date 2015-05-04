@@ -42,6 +42,7 @@ typedef enum {
 	KEYBORD_EXE 	= 31,	// EXE 			f 			Assign
 }keyboard_keys;
 
+int8_t keyboard_tonum(keyboard_keys key);
 /**
 * Initialize keyboard
 */

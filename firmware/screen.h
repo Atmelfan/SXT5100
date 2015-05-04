@@ -7,6 +7,8 @@ typedef struct {
 	* Called to setup screen alternatives and stuff
 	*/
 	void (*setup)();
+
+	void (*close)();
 	/**
 	* Called
 	*/
@@ -18,5 +20,8 @@ extern void set_screen(screen* scr);
 
 extern screen screen_clock;
 extern screen screen_console;
+extern screen screen_settings;
+extern screen screen_fs;
+
 
 #endif
