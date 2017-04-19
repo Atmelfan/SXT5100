@@ -1,0 +1,26 @@
+project "brandfarlig":
+	date "created" 15-02-08
+	date "modified" 15-06-02
+	tags:
+		"electronics"
+		"projects"
+		"robots"
+	end #of tags
+	bom:
+		"atxmega128a4u"			1
+		"resistor 0608 10K"		2
+	end #of bom
+end #of project 
+
+
+
+
+
+
+
+
+
+
+
+
+

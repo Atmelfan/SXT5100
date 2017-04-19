@@ -9,6 +9,7 @@
 #include "keyboard.h"
 #include "gfx_driver.h"
 #include "screen.h"
+//#include "apl.h"
 
 
 time_t current_time;
@@ -90,15 +91,16 @@ int main()
 	setClockTo32MHz();
 	PORTE.DIRSET = (1 << 2);
 	gfx_init();
+	apl_init_mem();
 	keyboard_init();
 	//Set initial date
 	struct tm date;
 	date.tm_year = 2015-1900;
-	date.tm_mon = 5-1;
-	date.tm_mday = 3;
-	date.tm_hour = 19;
-	date.tm_min = 21;
-	date.tm_sec = 55;
+	date.tm_mon = 7-1;
+	date.tm_mday = 18;
+	date.tm_hour = 14;
+	date.tm_min = 7;
+	date.tm_sec = 00;
 	date.tm_isdst = 0;
 	set_system_time(mktime(&date));
 	//Initialize clock screen
@@ -106,6 +108,7 @@ int main()
 	rtc_init();
 	PMIC_CTRL |= PMIC_HILVLEN_bm | PMIC_LOLVLEN_bm; //Enable RTC interrupts
 	while(1){
+		cli();
 		update();
 		//Sleep between interrupts
 		while(RTC.STATUS & RTC_SYNCBUSY_bm);

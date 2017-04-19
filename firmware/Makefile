@@ -30,7 +30,9 @@ CXXFLAGS=-mmcu=$(MMCU) -std=$(CXXSTD) $(CXXOPT) -Wall -Wno-strict-aliasing
 CXXFLAGS+=$(addprefix -I,$(INCLUDES))
 CXXFLAGS+=-include "$(SETTINGS)"
 
-LDFLAGS=-mmcu=$(MMCU) -Wl,--gc-sections -Wl,-Map=build/$(TARGET).map,--cref
+LDFLAGS=-mmcu=$(MMCU) -lm -Wl,--gc-sections -Wl,-Map=build/$(TARGET).map,--cref
+
+
 
 .PHONY: all
 all: build/$(TARGET).hex 

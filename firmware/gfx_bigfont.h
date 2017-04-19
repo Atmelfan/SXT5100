@@ -1,0 +1,2 @@
+#define BIGFONT_HEIGHT 32
+#define BIGFONT_WIDTH 16

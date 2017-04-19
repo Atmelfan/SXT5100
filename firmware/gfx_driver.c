@@ -1,7 +1,7 @@
 #include "gfx_driver.h"
 #include "gfx_font.h"
 #include <util/delay.h>
-
+ 
 void spi_init(){
 	/*Setup io*/
 	SET_DIR(DOG_A0);
@@ -14,6 +14,7 @@ void spi_init(){
 	CLR_IO(DOG_CS);//Select dogm
 }
 
+ 
 /*
 *Stupid me connected A0(output) to MISO which is made to a input by HW SPI...
 *So I have to bitbang everything, how fun!
@@ -84,7 +85,11 @@ void set_column(uint8_t column){
 
 
 void gfx_clear(){
-	for (int p = 0; p < 8; ++p)
+	gfx_clearr(0);	
+}
+
+void gfx_clearr(uint8_t r){
+	for (int p = r; p < 8; ++p)
 	{
 		set_page(p);
 		set_column(0);
@@ -93,7 +98,6 @@ void gfx_clear(){
 			spi_write_dat(0x00);
 		}
 	}
-	
 }
 
 void gfx_drawchar(uint8_t x, uint8_t row, char c, uint8_t style){
@@ -105,6 +109,10 @@ void gfx_drawchar(uint8_t x, uint8_t row, char c, uint8_t style){
 		if (style & GFX_UNDERLINE)
 		{
 			p |= 0x80;
+		}
+		if (style & GFX_CROSS)
+		{
+			p |= 0x08;
 		}
 		if (style & GFX_INVERT)
 		{
@@ -125,6 +133,10 @@ void gfx_drawstring(uint8_t x, uint8_t row, char* s, uint8_t style){
 			if (style & GFX_UNDERLINE)
 			{
 				p |= 0x80;
+			}
+			if (style & GFX_CROSS)
+			{
+				p |= 0x08;
 			}
 			if (style & GFX_INVERT)
 			{
@@ -150,6 +162,10 @@ void gfx_drawstring_cursor(uint8_t x, uint8_t row, char* s, uint8_t cursor, uint
 				if (style & GFX_UNDERLINE)
 				{
 					p |= 0x80;
+				}
+				if (style & GFX_CROSS)
+				{
+					p |= 0x08;
 				}
 				if (style & GFX_INVERT)
 				{

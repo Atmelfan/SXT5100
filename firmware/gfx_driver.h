@@ -5,6 +5,7 @@
 
 #define HEIGHT 64
 #define WIDTH 128
+#define LEFT_ADJ(l) (WIDTH - l*6) 
 
 typedef uint8_t pixel_t;
 
@@ -12,11 +13,13 @@ typedef uint8_t pixel_t;
 typedef enum 
 {
 	GFX_INVERT		= (1 << 0),
-	GFX_UNDERLINE	= (1 << 1)
+	GFX_UNDERLINE	= (1 << 1),
+	GFX_CROSS		= (1 << 2)
 }style;
 
 void gfx_init();
 void gfx_clear();
+void gfx_clearr(uint8_t);
 void gfx_drawchar(uint8_t x, uint8_t row, char c, uint8_t style);
 void gfx_drawstring(uint8_t x, uint8_t row, char* s, uint8_t style);
 void gfx_drawstring_cursor(uint8_t x, uint8_t row, char* s, uint8_t cursor, uint8_t style);

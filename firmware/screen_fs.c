@@ -42,13 +42,13 @@ void print_err(FRESULT err, uint8_t i){
 		gfx_drawstring(0,i,"ERR: NO FS",GFX_NONE);
 		break;
 		case FR_NOT_READY:
-		gfx_drawstring(0,i,"ERR: NOTRDY",GFX_NONE);
+		gfx_drawstring(0,i,"ERR: FOUND CAT",GFX_NONE);
 		break;
 		case FR_INVALID_DRIVE:
 		gfx_drawstring(0,i,"ERR: INVDRV",GFX_NONE);
 		break;
 		default:
-		gfx_drawstring(0,i,"ERR: UNKNOWN",GFX_NONE);
+		gfx_drawstring(0,i,"ERR: UNKNOWN ,':(",GFX_NONE);
 		break;
 	}
 }
@@ -87,7 +87,7 @@ uint8_t print_fs(uint8_t select){
 void update_fs(keyboard_keys key){
 	if (key == KEYBORD_F3)
 	{
-		set_screen(&screen_console);
+		set_screen(&screen_clock);
 		return;
 	}else if (key == KEYBORD_LEFT)
 	{
